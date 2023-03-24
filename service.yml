@@ -1,0 +1,7 @@
+name: demo-change-data-capture
+lang: unknown
+lang_version: unknown
+git:
+  enable: true
+github:
+  enable: true
