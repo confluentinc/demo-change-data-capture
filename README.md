@@ -1,16 +1,3 @@
-order
-
-1. create .env file
-1. log into aws
-1. source ~/.profile
-1. terraform init
-1. terraform plan
-1. terraform apply
-1. ./env.sh
-1. python3 oracle/prepare_database.py
-1. create connectors
-1. write ksqlDB
-
 <div align="center" padding=25px>
     <img src="images/confluent.png" width=50% height=50%>
 </div>
