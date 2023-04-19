@@ -573,6 +573,7 @@ All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
 
 ---
 
+
 ## Data Warehouse Connectors
 
 You're now ready to sink data to Snowflake and Amazon Redshift.
@@ -651,7 +652,9 @@ Once the connectors are fully provisioned, check for and troubleshoot any failur
 
    > **Note**: To things simple in this demo `TF_DEMO_SVC_ROLE` is given `SECURITYADMIN` level permissions. However, you should always follow best practices in production environment.
 
+
 ### Amazon Redshift
+
 
 ---
 
