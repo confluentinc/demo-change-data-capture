@@ -316,6 +316,9 @@ Once both are fully provisioned, check for and troubleshoot any failures that oc
 
 If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first.
 
+All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
+
+
 1. Navigate to Confluent Cloud web UI and then go to ksqlDB cluster.
 
 1. Change `auto.offset.reset = earliest`.
