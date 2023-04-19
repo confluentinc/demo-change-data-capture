@@ -61,12 +61,12 @@ In order to successfully complete this demo you need to install few tools before
 
 ### Oracle Database
 
-- This demo uses an Oracle Standard Edition database hosted on AWS that is publicly accessible.
+This demo uses an Oracle Standard Edition database hosted on AWS that is publicly accessible.
 
 ### Snowflake
 
-- Create a free account on Snowflake [website](https://www.snowflake.com/en/).
-- Your account must reside in the same region as your Confluent Cloud environment. This demo is configured for `aws-us-west-2`.
+1. Create a free account on Snowflake [website](https://www.snowflake.com/en/).
+1. Your account must reside in the same region as your Confluent Cloud environment. This demo is configured for `aws-us-west-2`.
 
 ---
 
@@ -179,7 +179,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    - A database named `TF_DEMO`.
    - All permissions needed for the demo.
 
-   For troubleshooting or more information review the [doc](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index#2).
+   > **Note:** For troubleshooting or more information review the [doc](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index#2).
 
 1. Source the `.env` file.
 
@@ -315,9 +315,7 @@ Once both are fully provisioned, check for and troubleshoot any failures that oc
 
 ## ksqlDB
 
-If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first.
-
-All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
+If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first. > **Note:** All queries are available in ksqldb_queries.sql [file](./ksqldb_queries.sql).
 
 1. Navigate to Confluent Cloud web UI and then go to ksqlDB cluster.
 
@@ -504,7 +502,7 @@ All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
    ```sql
    SELECT * FROM orders_rekeyed EMIT CHANGES;
    ```
-1. You're now ready to create a ksqlDB stream that joins these tables together to create enriched order data in real time.
+1. You're now ready to create a ksqlDB stream that joins these tables together to create enriched order data in real time. We will stream this topic to our data warehouses later on.
    ```sql
     CREATE STREAM orders_enriched WITH (
     KAFKA_TOPIC='orders_enriched',
@@ -569,7 +567,7 @@ All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
    SELECT * FROM rewards_status;
    ```
 
-1. We can either stream this data to an external system by leveraging a connector or we can write a producer that will publish updates (for example an in-app notifications). The sky is the limit!
+1. We can either stream this data to an external system by leveraging a connector or we can write a producer that will publish updates (for example, an in-app notifications for a mobile app). The sky is the limit!
 
 ---
 
