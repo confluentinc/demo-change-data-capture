@@ -8,19 +8,15 @@
 
 ## Background
 
-To turn data into insight, organizations often run ETL or ELT pipelines from operational databases into a data warehouse.
-However, ETL and ELT are built around batch processes, which result in low-fidelity snapshots, inconsistencies, and data
-systems with stale information—making any subsequent use of the data instantly outdated. Unlocking real-time insights
-requires a streaming architecture that’s continuously ingesting, processing, and provisioning data in real time.
+Confluent delivers a modern approach to break down data silos with streaming data pipelines and enables organizations with fully governed real-time data flows that can be shaped into multiple contexts while in motion, so different teams can gain self-service access to find, browse, create, share and reuse data, wherever and whenever it’s needed.
+Enterprises can take advantage of Confluent’s real-time change data capture (CDC) capabilities to continuously intercept changes to the database as streams, combine, enrich and analyze it with other data streams while in motion, even before it reaches at-rest systems like the database or data warehouse, enabling engineers to build applications directly on the data pipeline and expand its use to more real-time use cases. In addition, by continuously synchronizing change data across multiple systems automatically, organizations can use Confluent’s CDC capabilities to power data infrastructure and application modernization initiatives. By enabling multiple applications and systems across the organization to have a consistent, up-to-date view of data, Confluent helps enterprises unlock the full value of their data, allowing it to have a network effect.
+By promoting data reusability, engineering agility and greater collaboration and trust, more teams can confidently do more with their data and bring data products to market faster.
+
 This demo walks you through building streaming data pipelines with Confluent Cloud. You'll learn about:
 
 - Confluent’s fully managed PostgresSQL CDC Source and Oracle CDC Source Premium connectors to stream products, orders, customers, and demographics data in real time to Confluent Cloud
 - ksqlDB to process and enrich data in real time, generating a unified view of customers’ shopping habits
 - Snowflake and Amazon Redshift Sink connectors to load the enriched data into data warehouses for subsequent analytics and reporting
-
-Start streaming on-premises, hybrid, and multicloud data in minutes. Confluent streaming data pipelines connect, process,
-and govern real-time data flows to and from your data warehouse. Use fresh, enriched data to power real-time operational
-and analytical use cases.
 
 To learn more about Confluent’s solution, visit the [Data Warehouse streaming pipelines page](https://www.confluent.io/use-case/data-warehouse/).
 
@@ -573,7 +569,6 @@ All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
 
 ---
 
-
 ## Data Warehouse Connectors
 
 You're now ready to sink data to Snowflake and Amazon Redshift.
@@ -652,9 +647,7 @@ Once the connectors are fully provisioned, check for and troubleshoot any failur
 
    > **Note**: To things simple in this demo `TF_DEMO_SVC_ROLE` is given `SECURITYADMIN` level permissions. However, you should always follow best practices in production environment.
 
-
 ### Amazon Redshift
-
 
 ---
 
@@ -696,9 +689,10 @@ If you created a Terraform user in Snowflake solely to run this lab, you can rem
 
 ## Useful Links
 
+- Learn more about change data capture [here](https://www.confluent.io/learn/change-data-capture/)
 - Learn more about Streaming Data Pipelines [here](https://www.confluent.io/streaming-data-pipelines/)
 - Try more demos:
   - Real-time data warehousing https://github.com/confluentinc/demo-realtime-data-warehousing
   - Streaming Data Pipelines to Cloud Databases https://github.com/confluentinc/demo-database-modernization
-  - Application Modernization https://github.com/confluentinc/demo-application-modernization
   - Stream Designer, Confluent's visual canvas for rapidly building, testing, and deploying streaming data pipelines powered by Kafka https://github.com/confluentinc/demo-current-stream-designer
+  - Application Modernization https://github.com/confluentinc/demo-application-modernization
