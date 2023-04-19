@@ -1,0 +1,20 @@
+{
+  "name": "RedshiftSinkConnector",
+  "config": {
+    "connector.class": "RedshiftSink",
+    "name": "RedshiftSinkConnector",
+    "input.data.format": "JSON_SR",
+    "kafka.auth.mode": "KAFKA_API_KEY",
+    "kafka.api.key": "<add_your_api_key>",
+    "kafka.api.secret": "<add_your_api_secret_key>",
+    "topics": "orders_enriched",
+    "aws.redshift.domain": "<add_your_redshift_address>",
+    "aws.redshift.port": "5439",
+    "aws.redshift.user": "demo_user",
+    "aws.redshift.password": "4Testing",
+    "aws.redshift.database": "demo_confluent",
+    "auto.create": "true",
+    "auto.evolve": "true",
+    "tasks.max": "1"
+  }
+}

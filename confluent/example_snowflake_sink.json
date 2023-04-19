@@ -1,0 +1,19 @@
+{
+  "name": "SnowflakeSinkConnector",
+  "config": {
+    "topics": "orders_enriched",
+    "input.data.format": "JSON_SR",
+    "connector.class": "SnowflakeSink",
+    "name": "SnowflakeSinkConnector",
+    "kafka.auth.mode": "KAFKA_API_KEY",
+    "kafka.api.key": "<add_your_api_key>",
+    "kafka.api.secret": "<add_your_api_secret_key>",
+    "snowflake.url.name": "https://<add_snowflake_account>.snowflakecomputing.com",
+    "snowflake.user.name": "TF_DEMO_USER",
+    "snowflake.private.key": "<add_snowflake_private_key>",
+    "snowflake.database.name": "TF_DEMO",
+    "snowflake.schema.name": "PUBLIC",
+    "snowflake.topic2table.map": "orders_enriched:orders_enriched",
+    "tasks.max": "1"
+  }
+}

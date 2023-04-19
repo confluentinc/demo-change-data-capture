@@ -1,0 +1,28 @@
+{
+  "name": "OracleCdcSourceConnector",
+  "config": {
+    "connector.class": "OracleCdcSource",
+    "name": "OracleCdcSourceConnector",
+    "kafka.auth.mode": "KAFKA_API_KEY",
+    "kafka.api.key": "<add_your_api_key>",
+    "kafka.api.secret": "<add_your_api_secret_key>",
+    "oracle.server": "<add_your_rds_endpoint>",
+    "oracle.port": "1521",
+    "oracle.sid": "ORCL",
+    "oracle.username": "DB_USER",
+    "oracle.password": "democdc",
+    "table.inclusion.regex": "ORCL[.]ADMIN[.](DEMOGRAPHICS|CUSTOMERS)",
+    "start.from": "snapshot",
+    "query.timeout.ms": "60000",
+    "redo.log.row.fetch.size": "1",
+    "table.topic.name.template": "${databaseName}.${schemaName}.${tableName}",
+    "lob.topic.name.template": "${databaseName}.${schemaName}.${tableName}.${columnName}",
+    "enable.large.lob.object.support": "true",
+    "redo.log.topic.name": "OracleCdcSourceConnector-demo-redo-log",
+    "numeric.mapping": "best_fit_or_double",
+    "output.data.key.format": "JSON",
+    "output.data.value.format": "JSON_SR",
+    "key.template": "${primaryKeyStruct}",
+    "tasks.max": "1"
+  }
+}
