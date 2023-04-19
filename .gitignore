@@ -174,5 +174,3 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Storage
-**/.DS_Store
