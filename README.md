@@ -313,7 +313,7 @@ Once both are fully provisioned, check for and troubleshoot any failures that oc
 
 ---
 
-### ksqlDB
+## ksqlDB
 
 If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first.
 
@@ -573,7 +573,7 @@ All queries are available on ksqldb_queries.sql [file](./ksqldb_queries.sql).
 
 ---
 
-### Data Warehouse Connectors
+## Data Warehouse Connectors
 
 You're now ready to sink data to Snowflake and Amazon Redshift.
 
@@ -622,7 +622,13 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 </details>
 <br>
 
+---
+
+## Verifying results in data warehouses
+
 Once the connectors are fully provisioned, check for and troubleshoot any failures that occur. Properly configured, each connector begins reading data automatically.
+
+### Snowflake
 
 1. Log into your Snowflake account.
 1. Create a new worksheet or use an existing one.
@@ -645,9 +651,7 @@ Once the connectors are fully provisioned, check for and troubleshoot any failur
 
    > **Note**: To things simple in this demo `TF_DEMO_SVC_ROLE` is given `SECURITYADMIN` level permissions. However, you should always follow best practices in production environment.
 
-</details>
-
-<br>
+### Amazon Redshift
 
 ---
 
