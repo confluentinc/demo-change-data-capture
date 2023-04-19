@@ -173,12 +173,13 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    ```
 
 1. The `tf-snow` user account will be used by Terraform to create the following resources in Snowflake. All these resources will be deleted at the end of the demo when we run `terraform apply -destroy`. However, `tf-snow` won't get deleted.
+
    - A new user account named `TF_DEMO_USER` and a new public and private key pair.
    - A warehouse named `TF_DEMO`.
    - A database named `TF_DEMO`.
    - All permissions needed for the demo.
 
-For troubleshooting or more information review the [doc](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index#2).
+   For troubleshooting or more information review the [doc](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index#2).
 
 1. Source the `.env` file.
 
