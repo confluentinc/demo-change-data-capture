@@ -1,0 +1,25 @@
+{
+  "name": "PostgresCdcSource_Products",
+  "config": {
+    "connector.class": "PostgresCdcSource",
+    "name": "PostgresCdcSource_Products",
+    "kafka.auth.mode": "KAFKA_API_KEY",
+    "kafka.api.key": "<add_your_api_key>",
+    "kafka.api.secret": "<add_your_api_secret_key>",
+    "database.hostname": "<add_your_postgres_products_hostname>",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "demo-cdc-c0nflu3nt!",
+    "database.dbname": "postgres",
+    "database.server.name": "postgres",
+    "database.sslmode": "disable",
+    "table.include.list": "products.products, products.orders",
+    "slot.name": "redwoods",
+    "output.data.format": "JSON_SR",
+    "after.state.only": "true",
+    "output.key.format": "JSON",
+    "decimal.handling.mode": "precise",
+    "json.output.decimal.format": "NUMERIC",
+    "tasks.max": "1"
+  }
+}
