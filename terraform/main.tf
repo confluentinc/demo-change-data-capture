@@ -312,7 +312,8 @@ resource "aws_eip" "postgres_products_ip" {
 # ### Snowflake
 ######################################
 resource "snowflake_database" "db" {
-  provider = snowflake.security_admin
+  # provider = snowflake.security_admin 
+  provider = snowflake.sys_admin
   name     = "TF_DEMO"
 }
 
