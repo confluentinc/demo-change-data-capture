@@ -256,7 +256,7 @@ You can use Confluent Cloud CLI to submit all the source connectors automaticall
 1. Run a script that uses your `.env` file to generate real connector configuration json files from the example files located in the `confluent` folder.
 
    ```bash
-   cd demo-change-data-capture/connect
+   cd demo-change-data-capture/confluent
    ./create_connector_files.sh
    ```
 
@@ -285,8 +285,8 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 1. Run the following commands to create Oracle and PostgreSQL CDC Source connectors.
 
    ```bash
-   cd demo-change-data-capture/connect
-   confluent connect cluster create --config-file actual_oracle_cdc.json.json
+   cd demo-change-data-capture/confluent
+   confluent connect cluster create --config-file actual_oracle_cdc.json
    confluent connect cluster create --config-file actual_postgres_products_source.json
    ```
 
@@ -601,8 +601,8 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 
    ```bash
    cd demo-change-data-capture
-   confluent connect cluster create --config-file connect/actual_snowflake_sink.json
-   confluent connect cluster create --config-file connect/actual_redshift_sink.json
+   confluent connect cluster create --config-file confluent/actual_snowflake_sink.json
+   confluent connect cluster create --config-file confluent/actual_redshift_sink.json
    ```
 
 </details>
@@ -653,12 +653,25 @@ Once the connectors are fully provisioned, check for and troubleshoot any failur
 
 ### Amazon Redshift
 
+1. Log into your AWS account.
+1. Ensure you are logged into the right region. This demo is based in Oregon.
+1. Use the search bar and look for Redshift.
+1. Step into `demo-cdc` cluster.
+1. Click on the hamburger menu on the top left hand-side.
+1. Click on Query Editor v2 which should open up in a new tab.
+1. Click on **demo-cdc --> demo_confluent --> public --> Tables --> orders_enriched**.
+   > **Note**: If you are prompted for username and password use `aws.redshift.user` and `aws.redshift.password` from `actual_redshift_sink.json` file.
+1. Open a new worksheet and run the following query to see the results
+   ```sql
+   SELECT * FROM "demo_confluent"."public"."orders_enriched" limit 100;
+   ```
+
 ---
 
 ## CONGRATULATIONS
 
 Congratulations on building your streaming data pipelines for realtime data warehousing scenario in Confluent Cloud! Your complete pipeline should resemble the following one.
-![Alt Text](images/Stream-Lineage.gif)
+![Alt Text](images/stream_lineage.gif)
 
 ---
 
