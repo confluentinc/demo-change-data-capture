@@ -22,8 +22,6 @@ This demo walks you through building streaming data pipelines with Confluent Clo
 - ksqlDB to process and enrich data in real time, generating a unified view of customers’ shopping habits
 - Snowflake and Amazon Redshift Sink connectors to load the enriched data into data warehouses for subsequent analytics and reporting
 
-To learn more about Confluent’s solution, visit the [Data Warehouse streaming pipelines page](https://www.confluent.io/use-case/data-warehouse/).
-
 ---
 
 ## Architecture Diagram
