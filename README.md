@@ -222,6 +222,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
 1. Run the `env.sh` script.
    ```bash
+   cd demo-change-data-capture
    ./env.sh
    ```
 1. This script achieves the following:
@@ -309,11 +310,25 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 
 Once both are fully provisioned, check for and troubleshoot any failures that occur. Properly configured, each connector begins reading data automatically.
 
+### (Optional) Update Demographics table in Oracle database
+
+1. The fully-managed Oracle CDC Source connector for Confluent Cloud captures each change to rows in a database and then represents the changes as change event records in Apache Kafka® topics. Up until now, the data in Oracle database is static. Meaning after the initial load, there aren't any updates to the database. So ORCL.ADMIN.DEMOGRAPHICS and ORCL.ADMIN.CUSTOMERS topics in Confluent Cloud are identical DEMOGRAPHICS and CUSTOMERS table in Oracle.
+
+1. You can run `update_demographics.py` [script](./oracle/update_demographics.py) to see the changes in real time. This script will update the `country_code` from `US` to `USA` for all customers every 5 seconds.
+
+1. Open a new terminal and run
+   ```bash
+   python3 oracle/update_demographics.py
+   ```
+1. Navigate to Confluent Cloud web UI and see the changes stream in real time to `ORCL.ADMIN.DEMOGRAPHICS` topic.
+
 ---
 
 ## ksqlDB
 
-If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first. > **Note:** All queries are available in ksqldb_queries.sql [file](./ksqldb_queries.sql).
+If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first.
+
+> **Note:** All queries are available in ksqldb_queries.sql [file](./ksqldb_queries.sql).
 
 1. Navigate to Confluent Cloud web UI and then go to ksqlDB cluster.
 
