@@ -431,7 +431,7 @@ If all is well, it's time to transform and join your data using ksqlDB. Ensure y
         `size` VARCHAR,
         product VARCHAR,
         department VARCHAR,
-        price VARCHAR
+        price INT
    ) WITH (KAFKA_TOPIC='postgres.products.products', KEY_FORMAT='JSON', VALUE_FORMAT='JSON_SR', PARTITIONS=1, REPLICAS=3);
    ```
 
