@@ -97,8 +97,6 @@ VALUE_FORMAT='JSON_SR'
     GROUP BY product_id
 EMIT CHANGES;
 
-SELECT * FROM products;
-
 -- Orders
 CREATE STREAM orders_composite (
     order_key STRUCT<`order_id` VARCHAR> KEY,
