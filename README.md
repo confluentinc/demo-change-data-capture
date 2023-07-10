@@ -298,7 +298,7 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 1. Log into Confluent Cloud by navigating to https://confluent.cloud
 1. Step into **Demo_Change_Data_Capture** environment.
 1. If you are promoted with **Unlock advanced governance controls** screen, click on **No thanks, I will upgrade later**.
-   > **Note:** In this demo, the Essential package for Stream Governance is sufficient. However you can take a moment and review the differences between the Esstentials and Advanced packages.
+   > **Note:** In this demo, we use the Advanced package for Stream Governance. However you can take a moment and review the differences between the Esstentials and Advanced packages.
 1. Step into **demo_kafka_cluster**.
 1. On the navigation menu, select **Connectors** and then **+ Add connector**.
 1. In the search bar search for **Oracle** and select the **Oracle CDC Source Premium connector** which is a fully-managed connector.

@@ -56,8 +56,8 @@ resource "confluent_environment" "demo" {
 
 data "confluent_schema_registry_region" "essentials" {
   cloud   = "AWS"
-  region  = "us-east-2"
-  package = "ESSENTIALS"
+  region  = "us-west-2"
+  package = "ADVANCED"
 }
 
 resource "confluent_schema_registry_cluster" "essentials" {
