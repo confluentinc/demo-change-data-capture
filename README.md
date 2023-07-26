@@ -202,12 +202,12 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    ```
 1. Create the Terraform plan.
    ```bash
-   terraform plan -out=myplan
+   terraform plan
    ```
 1. Apply the plan to create the infrastructure.
 
    ```bash
-   terraform apply myplan
+   terraform apply
    ```
 
    > **Note:** Read the `main.tf` configuration file [to see what will be created](./terraform/main.tf).
@@ -701,7 +701,7 @@ You want to delete any resources that were created during the demo so you don't 
 
 1. Run the following command to delete all resources created by Terraform
    ```bash
-   terraform apply -destory
+   terraform apply
    ```
 
 ### Snowflake
