@@ -54,14 +54,14 @@ resource "confluent_environment" "demo" {
   display_name = "Demo_Change_Data_Capture"
 }
 
-data "confluent_schema_registry_region" "essentials" {
+data "confluent_schema_registry_region" "sg_package" {
   cloud   = "AWS"
-  region  = "us-west-2"
-  package = "ADVANCED"
+  region  = "us-east-2"
+  package = var.sg_package
 }
 
-resource "confluent_schema_registry_cluster" "essentials" {
-  package = data.confluent_schema_registry_region.essentials.package
+resource "confluent_schema_registry_cluster" "sr_package" {
+  package = data.confluent_schema_registry_region.sg_package.package
 
   environment {
     id = confluent_environment.demo.id
@@ -69,7 +69,7 @@ resource "confluent_schema_registry_cluster" "essentials" {
 
   region {
     # See https://docs.confluent.io/cloud/current/stream-governance/packages.html#stream-governance-regions
-    id = data.confluent_schema_registry_region.essentials.id
+    id = data.confluent_schema_registry_region.sg_package.id
   }
 }
 
@@ -192,7 +192,7 @@ resource "confluent_role_binding" "app-ksql-kafka-cluster-admin" {
 resource "confluent_role_binding" "app-ksql-schema-registry-resource-owner" {
   principal   = "User:${confluent_service_account.app-ksql.id}"
   role_name   = "ResourceOwner"
-  crn_pattern = format("%s/%s", confluent_schema_registry_cluster.essentials.resource_name, "subject=*")
+  crn_pattern = format("%s/%s", confluent_schema_registry_cluster.sr_package.resource_name, "subject=*")
 
   lifecycle {
     prevent_destroy = false
@@ -215,7 +215,7 @@ resource "confluent_ksql_cluster" "demo-ksql" {
   depends_on = [
     confluent_role_binding.app-ksql-kafka-cluster-admin,
     confluent_role_binding.app-ksql-schema-registry-resource-owner,
-    confluent_schema_registry_cluster.essentials
+    confluent_schema_registry_cluster.sr_package
   ]
 }
 
