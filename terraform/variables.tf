@@ -9,6 +9,12 @@ variable "confluent_cloud_api_secret" {
   sensitive   = true
 }
 
+variable "sg_package" {
+  description = "Stream Governance Package: Advanced or Essentials"
+  type        = string
+  default     = "ESSENTIALS"
+}
+
 variable "snowflake_region" {
   description = "Snowflake region"
   type        = string
@@ -97,18 +103,21 @@ variable "redshift_vpc_cidr" {
   type        = string
   description = "VPC IPv4 CIDR"
   default     = "10.0.0.0/16"
+  # default     = "10.1.0.0/16"
 }
 
 variable "redshift_subnet_1_cidr" {
   type        = string
   description = "IPv4 CIDR for Redshift subnet 1"
   default     = "10.0.1.0/24"
+  # default     = "10.1.1.0/24"
 }
 
 variable "redshift_subnet_2_cidr" {
   type        = string
   description = "IPv4 CIDR for Redshift subnet 2"
   default     = "10.0.2.0/24"
+  # default     = "10.1.2.0/24"
 }
 
 variable "redshift_schema" {

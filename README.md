@@ -212,6 +212,12 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
    > **Note:** Read the `main.tf` configuration file [to see what will be created](./terraform/main.tf).
 
+1. The default Terraform plan uses the **Essentials** package for Stream Governance. However, you can pass the package type as a command line variable as follow
+
+   ```bash
+   terraform apply -var sg_package="ADVANCED"
+   ```
+
 1. Write the output of `terraform` to a JSON file. The `env.sh` script will parse the JSON file to update the `.env` file.
 
    ```bash
