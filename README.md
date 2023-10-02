@@ -222,6 +222,12 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    - Creates an API key pair that will be used in connectors' configuration files for authentication purposes.
    - Updates the `.env` file to replace the remaining variables with the newly generated values.
 
+1. Source `.env` file.
+
+   ```bash
+   source .env
+   ```
+
 ### Prepare the Database for Change Data Capture
 
 1. Run the following Python script to create and populate `DEMOGRAPHICS` and `CUSTOMERS` tables, as well as enable Change Data Capture (CDC) on those tables.
