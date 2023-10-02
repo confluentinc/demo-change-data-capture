@@ -2,15 +2,15 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.0"
+      version = "5.16.2"
     }
     confluent = {
       source  = "confluentinc/confluent"
-      version = "1.17.0"
+      version = "1.51.0"
     }
     snowflake = {
       source  = "Snowflake-Labs/snowflake"
-      version = "0.58.0"
+      version = "~> 0.68"
     }
   }
 }
@@ -227,11 +227,11 @@ resource "aws_db_instance" "demo-change-data-capture" {
   engine         = "oracle-se2"
   engine_version = "19"
   instance_class = var.rds_instance_class
-  name           = "ORCL"
-  username       = var.rds_username
-  password       = var.rds_password
-  port           = 1521
-  license_model  = "license-included"
+  # name           = "ORCL"
+  username      = var.rds_username
+  password      = var.rds_password
+  port          = 1521
+  license_model = "license-included"
   #   parameter_group_name = "default.oracle-se2-19.0"
   allocated_storage   = 20
   storage_encrypted   = false
@@ -301,13 +301,15 @@ resource "aws_instance" "postgres_products" {
   }
 }
 resource "aws_eip" "postgres_products_ip" {
-  vpc      = true
+  # vpc      = true
+  domain   = "vpc"
   instance = aws_instance.postgres_products.id
   tags = {
     Name       = "demo-cdc-postgres-products-eip"
     created_by = "terraform"
   }
 }
+
 ######################################
 # ### Snowflake
 ######################################
@@ -330,93 +332,46 @@ resource "snowflake_role" "role" {
   name     = "TF_DEMO_SVC_ROLE"
 }
 
-resource "snowflake_database_grant" "grant_usage" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  privilege     = "USAGE"
-  roles         = [snowflake_role.role.name]
+resource "snowflake_grant_privileges_to_role" "database_grant" {
+  provider   = snowflake.security_admin
+  privileges = ["USAGE"]
+  role_name  = snowflake_role.role.name
+  on_account_object {
+    object_type = "DATABASE"
+    object_name = snowflake_database.db.name
+  }
+  # all_privileges    = true
+  with_grant_option = true
 }
 
-resource "snowflake_schema_grant" "usage" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  schema_name   = var.snowflake_schema
-  privilege     = "USAGE"
-  roles         = [snowflake_role.role.name]
+resource "snowflake_grant_privileges_to_role" "schema_grant" {
+  provider   = snowflake.security_admin
+  privileges = ["USAGE", "CREATE TABLE", "CREATE STAGE", "CREATE PIPE"]
+  role_name  = snowflake_role.role.name
+  on_schema {
+    schema_name = "\"${snowflake_database.db.name}\".\"${var.snowflake_schema}\"" # note this is a fully qualified name!
+  }
+  # all_privileges = true
 }
 
-resource "snowflake_schema_grant" "grant_write" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  privilege     = "CREATE TABLE"
-  roles         = [snowflake_role.role.name]
-  schema_name   = var.snowflake_schema
+# future schemas in database
+resource "snowflake_grant_privileges_to_role" "g8" {
+  provider   = snowflake.security_admin
+  privileges = ["USAGE", "CREATE TABLE", "CREATE STAGE", "CREATE PIPE"]
+  role_name  = snowflake_role.role.name
+  on_schema {
+    future_schemas_in_database = snowflake_database.db.name
+  }
 }
 
-resource "snowflake_schema_grant" "create_stage" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  privilege     = "CREATE STAGE"
-  roles         = [snowflake_role.role.name]
-  schema_name   = var.snowflake_schema
-}
-
-resource "snowflake_schema_grant" "create_pipe" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  privilege     = "CREATE PIPE"
-  roles         = [snowflake_role.role.name]
-  schema_name   = var.snowflake_schema
-}
-
-resource "snowflake_table_grant" "select" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  schema_name   = var.snowflake_schema
-  privilege     = "SELECT"
-  roles         = [snowflake_role.role.name]
-  on_future     = true
-}
-
-resource "snowflake_table_grant" "insert" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  schema_name   = var.snowflake_schema
-  privilege     = "INSERT"
-  roles         = [snowflake_role.role.name]
-  on_future     = true
-}
-
-resource "snowflake_table_grant" "update" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  schema_name   = var.snowflake_schema
-  privilege     = "UPDATE"
-  roles         = [snowflake_role.role.name]
-  on_future     = true
-}
-
-resource "snowflake_table_grant" "delete" {
-  provider      = snowflake.security_admin
-  database_name = snowflake_database.db.name
-  schema_name   = var.snowflake_schema
-  privilege     = "DELETE"
-  roles         = [snowflake_role.role.name]
-  on_future     = true
-}
-
-resource "snowflake_warehouse_grant" "grant_usage" {
-  provider       = snowflake.security_admin
-  warehouse_name = snowflake_warehouse.warehouse.name
-  privilege      = "USAGE"
-  roles          = [snowflake_role.role.name]
-}
-
-resource "snowflake_warehouse_grant" "grant_operate" {
-  provider       = snowflake.security_admin
-  warehouse_name = snowflake_warehouse.warehouse.name
-  privilege      = "OPERATE"
-  roles          = [snowflake_role.role.name]
+resource "snowflake_grant_privileges_to_role" "warehouse_grant" {
+  provider   = snowflake.security_admin
+  privileges = ["USAGE", "OPERATE"]
+  role_name  = snowflake_role.role.name
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = snowflake_warehouse.warehouse.name
+  }
 }
 
 resource "tls_private_key" "svc_key" {
@@ -425,11 +380,11 @@ resource "tls_private_key" "svc_key" {
 }
 
 resource "snowflake_user" "user" {
-  provider          = snowflake.security_admin
-  name              = "TF_DEMO_USER"
+  provider = snowflake.security_admin
+  name     = "TF_DEMO_USER"
   default_warehouse = snowflake_warehouse.warehouse.name
   default_role      = snowflake_role.role.name
-  rsa_public_key    = substr(tls_private_key.svc_key.public_key_pem, 27, 398)
+  rsa_public_key = substr(tls_private_key.svc_key.public_key_pem, 27, 398)
 }
 
 resource "snowflake_role_grants" "grants" {

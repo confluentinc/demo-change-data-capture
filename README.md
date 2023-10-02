@@ -79,35 +79,13 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    cd demo-change-data-capture
    ```
 
-1. Create a file to manage all the values you'll need through the setup.
+1. Create an `accounts` by running the following command.
 
    ```bash
-    CONFLUENT_CLOUD_EMAIL=<replace>
-    CONFLUENT_CLOUD_PASSWORD=<replace>
-
-    CCLOUD_API_KEY=api-key
-    CCLOUD_API_SECRET=api-secret
-    CCLOUD_BOOTSTRAP_ENDPOINT=kafka-cluster-endpoint
-
-    ORACLE_USERNAME=admin
-    ORACLE_PASSWORD=demo-cdc-c0nflu3nt!
-    ORACLE_ENDPOINT=oracle-endpoint
-    ORACLE_PORT=1521
-
-    POSTGRES_PRODUCTS_ENDPOINT=postgres-products
-    REDSHIFT_ADDRESS=redshift-address
-
-    SF_PVT_KEY=snowflake-private-key
-
-    export TF_VAR_confluent_cloud_api_key="<replace>"
-    export TF_VAR_confluent_cloud_api_secret="<replace>"
-
-    export SNOWFLAKE_USER="tf-snow"
-    export SNOWFLAKE_PRIVATE_KEY_PATH="../snowflake/snowflake_tf_snow_key.p8"
-    export SNOWFLAKE_ACCOUNT="YOUR_ACCOUNT_LOCATOR"
+   echo "CONFLUENT_CLOUD_EMAIL=add_your_email\nCONFLUENT_CLOUD_PASSWORD=add_your_password\nexport TF_VAR_confluent_cloud_api_key=\"add_your_api_key\"\nexport TF_VAR_confluent_cloud_api_secret=\"add_your_api_secret\"\nexport SNOWFLAKE_ACCOUNT=\"add_your_account_locator\"" > .accounts
    ```
 
-   > **Note:** Run `source .env` at any time to update these values in your terminal session. Do NOT commit this file to a GitHub repo.
+   > **Note:** This repo ignores `.accounts` file
 
 ### Confluent Cloud
 
@@ -115,7 +93,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
    > **Note:** This is different than Kafka cluster API keys.
 
-1. Update the `.env` file for the following variables with your credentials.
+1. Update the `.accounts` file for the following variables with your credentials.
 
    ```bash
     CONFLUENT_CLOUD_EMAIL=<replace>
@@ -162,11 +140,9 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
    > **Note:** If your Snowflake account isn't in AWS-US-West-2 refer to [doc](https://docs.snowflake.com/en/user-guide/admin-account-identifier#snowflake-region-ids) to identify your account locator.
 
-1. Update your `.env` file and add the newly created credentials for the following variables
+1. Update your `.accounts` file and add the newly created credentials for the following variable
 
    ```bash
-   export SNOWFLAKE_USER="tf-snow"
-   export SNOWFLAKE_PRIVATE_KEY_PATH="../snowflake/snowflake_tf_snow_key.p8"
    export SNOWFLAKE_ACCOUNT="YOUR_ACCOUNT_LOCATOR"
    ```
 
@@ -179,12 +155,22 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
    > **Note:** For troubleshooting or more information review the [doc](https://quickstarts.snowflake.com/guide/terraforming_snowflake/index.html?index=..%2F..index#2).
 
-1. Source the `.env` file.
+### Create a local environment file
 
-   ```
+1. Navigate to the home directory of the project and run `create_env.sh` script. This bash script copies the content of `.accounts` file into a new file called `.env` and append additional variables to it.
+
+   ```bash
    cd demo-change-data-capture
+   ./create_env.sh
+   ```
+
+1. Source `.env` file.
+
+   ```bash
    source .env
    ```
+
+   > **Note:**: if you don't source `.env` file you'll be prompted to manually provide the values through command line when running Terraform commands.
 
 ### Build your cloud infrastructure
 
@@ -193,7 +179,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 1. Navigate to the repo's terraform directory.
 
    ```bash
-   cd terraform
+   cd demo-change-data-capture/terraform
    ```
 
 1. Initialize Terraform within the directory.
@@ -218,7 +204,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    terraform apply -var sg_package="ADVANCED"
    ```
 
-1. Write the output of `terraform` to a JSON file. The `env.sh` script will parse the JSON file to update the `.env` file.
+1. Write the output of `terraform` to a JSON file. The `setup.sh` script will parse the JSON file to update the `.env` file.
 
    ```bash
    terraform output -json > ../resources.json
@@ -226,10 +212,10 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
    > **Note:** _Verify that the `resources.json` is created at root level of demo-change-data-capture directory._
 
-1. Run the `env.sh` script.
+1. Run the `setup.sh` script.
    ```bash
    cd demo-change-data-capture
-   ./env.sh
+   ./setup.sh
    ```
 1. This script achieves the following:
 
