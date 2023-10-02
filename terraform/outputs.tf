@@ -3,7 +3,7 @@ output "oracle_endpoint" {
   sensitive = true
 }
 output "postgres_instance_products_public_endpoint" {
-  value = aws_eip.postgres_products_ip.public_ip
+  value     = aws_eip.postgres_products_ip.public_ip
   sensitive = true
 }
 output "redshift_endpoint" {
