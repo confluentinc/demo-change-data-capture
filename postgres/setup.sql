@@ -24,14 +24,10 @@ CSV HEADER;
 
 -- # create and populate customers data table
 CREATE TABLE customers (
-    id VARCHAR(255) PRIMARY KEY, 
-    first_name VARCHAR(255),
-    last_name VARCHAR(255),
-    email VARCHAR(255),
-    phone VARCHAR(255)
+    id VARCHAR(255) PRIMARY KEY
 );
 
-COPY customers(id, first_name, last_name, email, phone)
+COPY customers(id)
 FROM '/data/customers.csv'
 DELIMITER ','
 CSV HEADER;
