@@ -66,45 +66,17 @@ source "$env_file"
 # Create tags for topics
 echo ""
 echo "Creating tags"
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "PII","description" : "Personally Identifiable Information."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
-
-echo ""
-echo "Creating tags"
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "Private","description" : "Private data that are not to be made public."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
-
-echo ""
-echo "Creating tags"
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "Sensitive","description" : "Confidential information that must be kept safe and out of reach from all outsiders unless they have permission to access it."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
-
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "DataProduct","description" : "Enriched customer data."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
-
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "RAW","description" : "Real-time raw data streamed from a data source."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
-
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET \
---header 'Content-Type: application/json' \
---data '[ { "entityTypes" : [ "cf_entity" ],"name" : "DLQ","description" : "Dead letter queue for sink connector."} ]' \
---url "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/tagdefs" | jq .
+./create-tag.sh ./pii-tag.json
+./create-tag.sh ./private-tag.json
+./create-tag.sh ./sensitive-tag.json
+./create-tag.sh ./dataprod-tag.json
+./create-tag.sh ./raw-tag.json
+./create-tag.sh ./dlq-tag.json
 
 # Create business metadata for topics
 echo ""
 echo "Creating business metadata"
-curl -u $CCLOUD_SCHEMA_REGISTRY_API_KEY:$CCLOUD_SCHEMA_REGISTRY_API_SECRET  -X POST -H "Content-Type: application/json" \
---data @team.txt "{$CCLOUD_SCHEMA_REGISTRY_URL}/catalog/v1/types/businessmetadatadefs" | jq .
+./create-business-metadata.sh ./team.txt
 
 # Read values from resources.json and update the $env_file file.
 # These resources are created by Terraform
