@@ -1,0 +1,3 @@
+This directory is intentionally left empty. 
+Once you complete the Snowflake's setup instructions, the snowflake_tf_snow_key.p8 and snowflake_tf_snow_key.pub files will be created in this directory.
+This repo ignores snowflake_tf_snow_key.p8 and snowflake_tf_snow_key.pub files
