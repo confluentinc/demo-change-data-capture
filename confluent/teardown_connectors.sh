@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Source the .env file
-source .env
+current_dir=$(pwd)
+parent_dir=$(dirname "$current_dir")
+
+env_file="${parent_dir}/.env"
 
 # Use confluent environment
 confluent login --save

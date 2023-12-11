@@ -1,7 +1,11 @@
 #!/bin/bash
 
 sleep_time=2
-env_file=".env"
+current_dir=$(pwd)
+parent_dir=$(dirname "$current_dir")
+
+env_file="${parent_dir}/.env"
+resources_file="${parent_dir}/resources.json"
 
 # Use confluent environment
 confluent login --save
@@ -21,7 +25,7 @@ export CCLOUD_BOOTSTRAP_ENDPOINT=$(confluent kafka cluster describe -o json | jq
 STRIPPED_CCLOUD_BOOTSTRAP_ENDPOINT=$(echo $CCLOUD_BOOTSTRAP_ENDPOINT | sed 's/SASL_SSL:\/\///')
 
 # use sed to replace kafka-cluster-endpoint with the replacement string
-sed -i .bak "s/kafka-cluster-endpoint/$STRIPPED_CCLOUD_BOOTSTRAP_ENDPOINT/g" $env_file
+sed -i .bak "s/kafka-cluster-endpoint/$STRIPPED_CCLOUD_BOOTSTRAP_ENDPOINT/g" "$env_file"
 echo "Added Kafka cluster endpoint to $env_file"
 sleep $sleep_time
 
@@ -33,15 +37,50 @@ kafka_api_secret=$(echo $CREDENTIALS | jq -r '.api_secret')
 sleep $sleep_time
 
 # use sed to replace all instances of $kafka_api_key with the replacement string
-sed -i .bak "s^api-key^\"$kafka_api_key\"^g" $env_file 
-sed -i .bak "s^api-secret^\"$kafka_api_secret\"^g" $env_file 
+sed -i .bak "s^api-key^\"$kafka_api_key\"^g" "$env_file"
+sed -i .bak "s^api-secret^\"$kafka_api_secret\"^g" "$env_file" 
 echo "Added Kafka API key and secret to $env_file"
 
 sleep $sleep_time
 
+# Get schema registry info
+export CCLOUD_SCHEMA_REGISTRY_ID=$(confluent sr cluster describe -o json | jq -r .cluster_id)
+export CCLOUD_SCHEMA_REGISTRY_ENDPOINT=$(confluent sr cluster describe -o json | jq -r .endpoint_url)
+
+echo ""
+echo "Creating schema registry API key"
+SR_CREDENTIALS=$(confluent api-key create --resource $CCLOUD_SCHEMA_REGISTRY_ID --description "demo-change-data-capture" -o json)
+sr_api_key=$(echo $SR_CREDENTIALS | jq -r '.api_key')
+sr_api_secret=$(echo $SR_CREDENTIALS | jq -r '.api_secret')
+sleep $sleep_time
+
+# use sed to replace all instances of $sr_api_key and $sr_api_secret with the replacement string
+sed -i .bak "s^sr-key^\"$sr_api_key\"^g" "$env_file" 
+sed -i .bak "s^sr-secret^\"$sr_api_secret\"^g" "$env_file"
+sed -i .bak "s^sr-cluster-endpoint^$CCLOUD_SCHEMA_REGISTRY_ENDPOINT^g" "$env_file"
+sleep $sleep_time
+
+# source the $env_file file
+source "$env_file"
+
+# Create tags for topics
+echo ""
+echo "Creating tags"
+./create-tag.sh ./pii-tag.json
+./create-tag.sh ./private-tag.json
+./create-tag.sh ./sensitive-tag.json
+./create-tag.sh ./dataprod-tag.json
+./create-tag.sh ./raw-tag.json
+./create-tag.sh ./dlq-tag.json
+
+# Create business metadata for topics
+echo ""
+echo "Creating business metadata"
+./create-business-metadata.sh ./team.txt
+
 # Read values from resources.json and update the $env_file file.
 # These resources are created by Terraform
-json=$(cat resources.json)
+json=$(cat "$resources_file")
 
 oracle_endpoint=$(echo "$json" | jq -r '.oracle_endpoint.value.address')
 postgres_products=$(echo "$json" | jq -r '.postgres_instance_products_public_endpoint.value')
@@ -53,14 +92,12 @@ redshift_endpoint=$(echo "$json" | jq -r '.redshift_endpoint.value')
 redshift_address=$(echo $redshift_endpoint | sed 's/:5439//')
 
 # Updating the $env_file file with sed command
-sed -i .bak "s^oracle-endpoint^$oracle_endpoint^g" $env_file 
-sed -i .bak "s^postgres-products^$postgres_products^g" $env_file 
-sed -i .bak "s^snowflake-private-key^\"$snowflake_svc_private_key\"^g" $env_file 
-sed -i .bak "s^redshift-address^$redshift_address^g" $env_file 
+sed -i .bak "s^oracle-endpoint^$oracle_endpoint^g" "$env_file" 
+sed -i .bak "s^postgres-products^$postgres_products^g" "$env_file" 
+sed -i .bak "s^snowflake-private-key^\"$snowflake_svc_private_key\"^g" "$env_file" 
+sed -i .bak "s^redshift-address^$redshift_address^g" "$env_file" 
 
 echo "Added Oracle endpoint to $env_file"
 echo "Added PostgreSQL endpoint to $env_file"
 echo "Added Snowflake private key to $env_file"
 echo "Added Amazon Redshift address to $env_file"
-
-# sleep $sleep_time

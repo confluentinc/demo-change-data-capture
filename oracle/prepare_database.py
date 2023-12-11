@@ -40,7 +40,7 @@ def create_customers_table(connection: oracledb.Connection) -> None:
     cursor = connection.cursor()
     # cursor.execute(""" DROP TABLE IF EXISTS CUSTOMERS""")
     sleep(2)
-    cursor.execute(""" CREATE TABLE CUSTOMERS (id VARCHAR(255) PRIMARY KEY, first_name VARCHAR2(255), last_name VARCHAR2(255), email VARCHAR2(255), phone VARCHAR2(255))  """)
+    cursor.execute(""" CREATE TABLE CUSTOMERS (id VARCHAR(255) PRIMARY KEY, first_name VARCHAR2(255), last_name VARCHAR2(255), email VARCHAR2(255), phone VARCHAR2(255), dob VARCHAR2(255))  """)
     connection.commit()
     cursor.close()
     # If the database connection is still open, then close it
@@ -89,18 +89,19 @@ def populate_customers_table(connection: oracledb.Connection, data_dir) -> None:
         for row in reader:
             cursor = connection.cursor()
             cursor.execute("""
-                INSERT INTO CUSTOMERS (id, first_name, last_name, email, phone)
-                VALUES (:id, :first_name, :last_name, :email, :phone)
+                INSERT INTO CUSTOMERS (id, first_name, last_name, email, phone, dob)
+                VALUES (:id, :first_name, :last_name, :email, :phone, :dob)
             """, {
                 'id': row['id'],
                 'first_name': row['first_name'],
                 'last_name': row['last_name'],
                 'email': row['email'],
-                'phone': row['phone']
+                'phone': row['phone'],
+                'dob': row['dob']
             })
 
             connection.commit()
-            print("Successfully added a new row: "+row['id']+","+row['first_name']+","+row['last_name']+","+row['email']+","+row['phone'])
+            print("Successfully added a new row: "+row['id']+","+row['first_name']+","+row['last_name']+","+row['email']+","+row['phone']+","+row['dob'])
             cursor.close()
             # sleep(0.1)
 

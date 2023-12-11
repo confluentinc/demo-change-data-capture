@@ -57,14 +57,14 @@ In order to successfully complete this demo you need to install few tools before
 
    > **Note:** If you're logging in for the first time you will see a wizard that will walk you through the some tutorials. Minimize this as you will walk through these steps in this guide.
 
-### Oracle Database
+### AWS
 
-This demo uses an Oracle Standard Edition database hosted on AWS that is publicly accessible.
+This demo uses an Oracle Standard Edition database and Amazon Redshift cluster hosted on AWS that are publicly accessible.
 
 ### Snowflake
 
 1. Create a free account on Snowflake [website](https://www.snowflake.com/en/).
-1. Your account must reside in the same region as your Confluent Cloud environment. This demo is configured for `aws-us-west-2`.
+1. Your account must reside in the same region as your Confluent Cloud environment in order for the connector to work successfully. This demo is configured for `aws-us-west-2`.
 
 ---
 
@@ -82,7 +82,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 1. Create an `accounts` by running the following command.
 
    ```bash
-   echo "CONFLUENT_CLOUD_EMAIL=add_your_email\nCONFLUENT_CLOUD_PASSWORD=add_your_password\nexport TF_VAR_confluent_cloud_api_key=\"add_your_api_key\"\nexport TF_VAR_confluent_cloud_api_secret=\"add_your_api_secret\"\nexport SNOWFLAKE_ACCOUNT=\"add_your_account_locator\"" > .accounts
+   echo "CONFLUENT_CLOUD_EMAIL=add_your_email\nCONFLUENT_CLOUD_PASSWORD=add_your_password\nCONFLUENT_CLOUD_USER_FULL_NAME=\"add_user_full_name\"\nexport TF_VAR_confluent_cloud_api_key=\"add_your_api_key\"\nexport TF_VAR_confluent_cloud_api_secret=\"add_your_api_secret\"\nexport SNOWFLAKE_ACCOUNT=\"add_your_account_locator\"" > .accounts
    ```
 
    > **Note:** This repo ignores `.accounts` file
@@ -98,6 +98,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    ```bash
     CONFLUENT_CLOUD_EMAIL=<replace>
     CONFLUENT_CLOUD_PASSWORD=<replace>
+    CONFLUENT_CLOUD_USER_FULL_NAME=<replace>
     export TF_VAR_confluent_cloud_api_key="<replace>"
     export TF_VAR_confluent_cloud_api_secret="<replace>"
    ```
@@ -110,7 +111,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    cd demo-change-data-capture/snowflake
    ```
 
-1. Create an RSA key for Authentication. This creates the private and public keys we use to authenticate the service account we will use for Terraform.
+1. Create an RSA key for Authentication. This creates the private and public keys you need to authenticate the service account for Terraform.
    ```bash
    openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out snowflake_tf_snow_key.p8 -nocrypt
    openssl rsa -in snowflake_tf_snow_key.p8 -pubout -out snowflake_tf_snow_key.pub
@@ -146,7 +147,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    export SNOWFLAKE_ACCOUNT="YOUR_ACCOUNT_LOCATOR"
    ```
 
-1. The `tf-snow` user account will be used by Terraform to create the following resources in Snowflake. All these resources will be deleted at the end of the demo when we run `terraform apply -destroy`. However, `tf-snow` won't get deleted.
+1. The `tf-snow` user account will be used by Terraform to create the following resources in Snowflake. All these resources will be deleted at the end of the demo when you run `terraform -destroy`. However, `tf-snow` won't get deleted.
 
    - A new user account named `TF_DEMO_USER` and a new public and private key pair.
    - A warehouse named `TF_DEMO`.
@@ -157,20 +158,20 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
 ### Create a local environment file
 
-1. Navigate to the home directory of the project and run `create_env.sh` script. This bash script copies the content of `.accounts` file into a new file called `.env` and append additional variables to it.
+1. Navigate to the `confluent` directory of the project and run `create_env.sh` script. This bash script copies the content of `.accounts` file into a new file called `.env` and append additional variables to it.
 
    ```bash
-   cd demo-change-data-capture
+   cd demo-change-data-capture/confluent
    ./create_env.sh
    ```
 
 1. Source `.env` file.
 
    ```bash
-   source .env
+   source ../.env
    ```
 
-   > **Note:**: if you don't source `.env` file you'll be prompted to manually provide the values through command line when running Terraform commands.
+   > **Note:** if you don't source `.env` file you'll be prompted to manually provide the values through command line when running Terraform commands.
 
 ### Build your cloud infrastructure
 
@@ -190,19 +191,13 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
    ```bash
    terraform plan
    ```
-1. Apply the plan to create the infrastructure.
+1. Apply the plan to create the infrastructure. You can run `terraform apply -auto-approve` to bypass the approval prompt.
 
    ```bash
    terraform apply
    ```
 
    > **Note:** Read the `main.tf` configuration file [to see what will be created](./terraform/main.tf).
-
-1. The default Terraform plan uses the **Essentials** package for Stream Governance. However, you can pass the package type as a command line variable as follow
-
-   ```bash
-   terraform apply -var sg_package="ADVANCED"
-   ```
 
 1. Write the output of `terraform` to a JSON file. The `setup.sh` script will parse the JSON file to update the `.env` file.
 
@@ -214,7 +209,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 
 1. Run the `setup.sh` script.
    ```bash
-   cd demo-change-data-capture
+   cd demo-change-data-capture/confluent
    ./setup.sh
    ```
 1. This script achieves the following:
@@ -225,7 +220,7 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 1. Source `.env` file.
 
    ```bash
-   source .env
+   source ../.env
    ```
 
 ### Prepare the Database for Change Data Capture
@@ -233,7 +228,8 @@ This demo uses Terraform and bash scripting to create and teardown infrastructur
 1. Run the following Python script to create and populate `DEMOGRAPHICS` and `CUSTOMERS` tables, as well as enable Change Data Capture (CDC) on those tables.
 
    ```bash
-   python3 oracle/prepare_database.py
+   cd demo-change-data-capture/oracle
+   python3 prepare_database.py
    ```
 
 1. Take a moment to inspect the files in the `oracle` directory to understand what just happened.
@@ -250,12 +246,12 @@ Confluent offers 120+ pre-built [connectors](https://www.confluent.io/product/co
 
 You can use Confluent Cloud CLI to submit all the source connectors automatically.
 
-1. Run a script that uses your `.env` file to generate real connector configuration json files from the example files located in the `confluent` folder.
+Run a script that uses your `.env` file to generate real connector configuration json files from the example files located in the `confluent` folder.
 
-   ```bash
-   cd demo-change-data-capture/confluent
-   ./create_connector_files.sh
-   ```
+```bash
+cd demo-change-data-capture/confluent
+./create_connector_files.sh
+```
 
 ### Configure Source Connectors
 
@@ -296,7 +292,7 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 1. Log into Confluent Cloud by navigating to https://confluent.cloud
 1. Step into **Demo_Change_Data_Capture** environment.
 1. If you are promoted with **Unlock advanced governance controls** screen, click on **No thanks, I will upgrade later**.
-   > **Note:** In this demo, we use the Advanced package for Stream Governance. However you can take a moment and review the differences between the Esstentials and Advanced packages.
+   > **Note:** In this demo, you use the Advanced package for Stream Governance. However you can take a moment and review the differences between the Esstentials and Advanced packages.
 1. Step into **demo_kafka_cluster**.
 1. On the navigation menu, select **Connectors** and then **+ Add connector**.
 1. In the search bar search for **Oracle** and select the **Oracle CDC Source Premium connector** which is a fully-managed connector.
@@ -310,7 +306,7 @@ Once both are fully provisioned, check for and troubleshoot any failures that oc
 
 ### (Optional) Update Demographics table in Oracle database
 
-1. The fully-managed Oracle CDC Source connector for Confluent Cloud captures each change to rows in a database and then represents the changes as change event records in Apache Kafka® topics. Up until now, the data in Oracle database is static. Meaning after the initial load, there aren't any updates to the database. So ORCL.ADMIN.DEMOGRAPHICS and ORCL.ADMIN.CUSTOMERS topics in Confluent Cloud are identical DEMOGRAPHICS and CUSTOMERS table in Oracle.
+1. The fully-managed Oracle CDC Source connector for Confluent Cloud captures each change to rows in a database and then represents the changes as change event records in Apache Kafka® topics. Up until now, the data in Oracle database is static. Meaning after the initial load, there aren't any updates to the database. So `ORCL.ADMIN.DEMOGRAPHICS` and `ORCL.ADMIN.CUSTOMERS` topics in Confluent Cloud are identical DEMOGRAPHICS and CUSTOMERS table in Oracle.
 
 1. You can run `update_demographics.py` [script](./oracle/update_demographics.py) to see the changes in real time. This script will update the `country_code` from `US` to `USA` for all customers every 5 seconds.
 
@@ -322,11 +318,11 @@ Once both are fully provisioned, check for and troubleshoot any failures that oc
 
 ---
 
-## ksqlDB
+## Stream Processing (ksqlDB)
 
 If all is well, it's time to transform and join your data using ksqlDB. Ensure your topics are receiving records first.
 
-> **Note:** All queries are available in ksqldb_queries.sql [file](./ksqldb_queries.sql).
+> **Note:** All queries are available in ksqldb_queries.sql [file](./confluent/ksqldb_queries.sql).
 
 1. Navigate to Confluent Cloud web UI and then go to ksqlDB cluster.
 
@@ -354,7 +350,7 @@ If all is well, it's time to transform and join your data using ksqlDB. Ensure y
    SELECT * FROM demographics_composite EMIT CHANGES;
    ```
 
-1. The type for the key field in `demographics_composite` is a `STRUCT`. To keep things simple we want to flat that field and then create a table. We'll achieve both by running the following query
+1. The type for the key field in `demographics_composite` is a `STRUCT`. To keep things simple you want to flat that field and then create a table. You'll achieve both by running the following query
 
    ```sql
     CREATE TABLE demographics WITH (KAFKA_TOPIC='demographics', KEY_FORMAT='JSON',VALUE_FORMAT='JSON_SR') AS
@@ -513,7 +509,7 @@ If all is well, it's time to transform and join your data using ksqlDB. Ensure y
    ```sql
    SELECT * FROM orders_rekeyed EMIT CHANGES;
    ```
-1. You're now ready to create a ksqlDB stream that joins these tables together to create enriched order data in real time. We will stream this topic to our data warehouses later on.
+1. You're now ready to create a ksqlDB stream that joins these tables together to create enriched order data in real time. You will stream this topic to our data warehouses later on.
    ```sql
     CREATE STREAM orders_enriched WITH (
     KAFKA_TOPIC='orders_enriched',
@@ -549,9 +545,9 @@ If all is well, it's time to transform and join your data using ksqlDB. Ensure y
    SELECT * FROM orders_enriched EMIT CHANGES;
    ```
 
-   > **Note:** We need a stream to 'hydrate' our data warehouse once the sink connector is set up.
+   > **Note:** You need a stream to 'hydrate' our data warehouse once the sink connector is set up.
 
-1. Now we want to create a rewards table. Let's say we want to immediately notify our customers once they unlock a new status. We can easily do so by creating a table which is again updated in real time based on customer's purchases.
+1. Now you want to create a rewards table. Let's say you want to immediately notify our customers once they unlock a new status. You can easily do so by creating a table which is again updated in real time based on customer's purchases.
 
    ```sql
     CREATE TABLE rewards_status WITH(KAFKA_TOPIC='rewards_status',
@@ -578,7 +574,73 @@ If all is well, it's time to transform and join your data using ksqlDB. Ensure y
    SELECT * FROM rewards_status;
    ```
 
-1. We can either stream this data to an external system by leveraging a connector or we can write a producer that will publish updates (for example, an in-app notifications for a mobile app). The sky is the limit!
+1. You can either stream this data to an external system by leveraging a connector or you can write a producer that will publish updates (for example, an in-app notifications for a mobile app). The sky is the limit!
+
+---
+
+## Data Portal
+
+[Data portal](https://docs.confluent.io/cloud/current/stream-governance/data-portal.html) is a self-service interface for discovering, exploring, and accessing Apache Kafka® topics on Confluent Cloud.
+
+Building new streaming applications and pipelines on top of Kafka can be slow and inefficient when there is a lack of visibility into what data exists, where it comes from, and who can grant access. Data portal leverages Stream Catalog and Stream Lineage to empower data users to interact with their organization’s data streams efficiently and collaboratively.
+
+1. You will use a script to assign tags, business metadata, descriptions and other relevant information to each topic.
+
+1. Run the `update_topics.sh`
+
+   ```bash
+   cd demo-change-data-capture/confluent
+   ./update_topics.sh
+   ```
+
+1. Take a moment to inspect the `update_topics.sh` script to understand what just happened.
+
+1. Log into to [Confluent Cloud web UI](confluent.cloud) and click on **Data Portal** using the left hand-side menu.
+
+1. Use the drop down and select **Demo_Change_Data_Capture** as your environment and see all recently modified topics.
+
+1. You can discover topics by either using the search box or use filters.
+
+1. For example, find all topics that are tagged as **DataProduct**.
+
+1. You can click on each topic and learn who owns them, how to contact the owner, review the schema, see the events as they are being produced and other information.
+
+![Alt Text](images/data_portal.gif)
+
+### (Optional) Onboard new users
+
+So far you have been experiencing Data Portal as an organization admin which has the highest levels of permissions. As an org admin, you can onboard new users and assign them the **Data Discovery** role so they can browse topics and request to access them.
+
+<details>
+    <summary><b>Add user</b></summary>
+
+1. Log into to [Confluent Cloud web UI](confluent.cloud) and click on the hamberger menu on the top right corner of the screen next to the **?** icon.
+
+1. Click on **Accounts & access** and then on **+Add user** and enter an email address. If the recipient doesn't have a Confluent Cloud account, they will be invited to create one before being able to join your organization.
+
+1. Uncheck the **Add DataDiscovery role** checkbox which is automatically selected. Click **Continue**.
+
+1. Select **Demo_Change_Data_Capture** as the **Environment**, click on **+Add role assignment** and select **DataDiscovery** and hit **Add** and finally **Confirm**.
+
+1. Your screen should resemble the following
+   <div align="center" padding=25px>
+      <img src="images/rbac.png" width=50% height=50%>
+   </div>
+
+1. The new user will recieve an email with instructions on how to join your organization.
+
+1. After the new user logs in, they can navigate to the **Data Portal** tab and discover all existing topics, review tags, business metadata and more. However, they won't be able to see any messages until their request for access is approved.
+   <div align="center" padding=25px>
+      <img src="images/user2_view.png" width=50% height=50%>
+   </div>
+
+1. After you (an org admin) approve their request, they can see the messages in the preview panel. Furthermore, they can review all messages inside any topics they have permission to read/write.
+   <div align="center" padding=25px>
+      <img src="images/user2_read.png" width=50% height=50%>
+   </div>
+
+</details>
+<br>
 
 ---
 
@@ -594,7 +656,7 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 1. Log into your Confluent account in the CLI.
 
    ```bash
-   confluent login --save
+
    ```
 
 1. Use your environment and your cluster.
@@ -609,9 +671,9 @@ You can create the connectors either through CLI or Confluent Cloud web UI.
 1. Run the following command to create Snowflake Sink connector
 
    ```bash
-   cd demo-change-data-capture
-   confluent connect cluster create --config-file confluent/actual_snowflake_sink.json
-   confluent connect cluster create --config-file confluent/actual_redshift_sink.json
+   cd demo-change-data-capture/confluent
+   confluent connect cluster create --config-file actual_snowflake_sink.json
+   confluent connect cluster create --config-file actual_redshift_sink.json
    ```
 
 </details>
@@ -693,12 +755,13 @@ You want to delete any resources that were created during the demo so you don't 
 1. Run the following command to delete all connectors
 
    ```bash
-   cd demo-change-data-capture
+   cd demo-change-data-capture/confluent
    ./teardown_connectors.sh
    ```
 
-1. Run the following command to delete all resources created by Terraform
+1. Run the following command to delete all resources created by Terraform. You can run `terraform destroy -auto-approve` to bypass the approval step.
    ```bash
+   cd demo-change-data-capture/terraform
    terraform destroy
    ```
 
@@ -717,6 +780,8 @@ If you created a Terraform user in Snowflake solely to run this lab, you can rem
 
 - Learn more about change data capture [here](https://www.confluent.io/learn/change-data-capture/)
 - Learn more about Streaming Data Pipelines [here](https://www.confluent.io/streaming-data-pipelines/)
+- Learn more about Data Portal [here](https://docs.confluent.io/cloud/current/stream-governance/data-portal.html)
+- Watch Stream Governance course [here](https://developer.confluent.io/courses/governing-data-streams/overview/)
 - Try more demos:
   - Real-time data warehousing https://github.com/confluentinc/demo-realtime-data-warehousing
   - Streaming Data Pipelines to Cloud Databases https://github.com/confluentinc/demo-database-modernization

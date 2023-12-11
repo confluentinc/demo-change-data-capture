@@ -12,7 +12,7 @@ variable "confluent_cloud_api_secret" {
 variable "sg_package" {
   description = "Stream Governance Package: Advanced or Essentials"
   type        = string
-  default     = "ESSENTIALS"
+  default     = "ADVANCED"
 }
 
 variable "snowflake_region" {
@@ -55,6 +55,25 @@ variable "rds_password" {
   type        = string
   default     = "demo-cdc-c0nflu3nt!"
 }
+
+variable "rds_vpc_cidr" {
+  type        = string
+  description = "VPC IPv4 CIDR"
+  default     = "10.0.0.0/16"
+}
+
+variable "rds_subnet_1_cidr" {
+  type        = string
+  description = "IPv4 CIDR for RDS Oracle subnet 1"
+  default     = "10.0.1.0/24"
+}
+
+variable "rds_subnet_2_cidr" {
+  type        = string
+  description = "IPv4 CIDR for  RDS Oracle subnet 2"
+  default     = "10.0.2.0/24"
+}
+
 
 variable "redshift_cluster_identifier" {
   type        = string

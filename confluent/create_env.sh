@@ -1,7 +1,10 @@
 #!/bin/bash
 
-accounts_file=".accounts"
-env_file=".env"
+current_dir=$(pwd)
+parent_dir=$(dirname "$current_dir")
+
+accounts_file="${parent_dir}/.accounts"
+env_file="${parent_dir}/.env"
 
 # Check if .accounts file exists
 if [ ! -f "$accounts_file" ]; then
@@ -14,6 +17,10 @@ env_content=$(cat <<EOF
 CCLOUD_API_KEY=api-key
 CCLOUD_API_SECRET=api-secret
 CCLOUD_BOOTSTRAP_ENDPOINT=kafka-cluster-endpoint
+
+CCLOUD_SCHEMA_REGISTRY_API_KEY=sr-key
+CCLOUD_SCHEMA_REGISTRY_API_SECRET=sr-secret
+CCLOUD_SCHEMA_REGISTRY_URL=sr-cluster-endpoint
 
 ORACLE_USERNAME=admin
 ORACLE_PASSWORD=demo-cdc-c0nflu3nt!

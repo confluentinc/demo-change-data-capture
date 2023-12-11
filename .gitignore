@@ -366,6 +366,8 @@ notes
 .env
 key.json
 resources.json
+team_customer_support.txt
+team_marketing_analytics.txt
 
 # Storage
 **/.DS_Store
