@@ -361,8 +361,8 @@ notes.sql
 clipboard.file
 notes
 .config
-*.p8
-*.pub
+snowflake_tf_snow_key.p8
+snowflake_tf_snow_key.pub
 .env
 key.json
 resources.json

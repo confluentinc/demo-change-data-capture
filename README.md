@@ -43,7 +43,7 @@ In order to successfully complete this demo you need to install few tools before
 - `git`
 - Docker
 - Terraform
-  - Special instructions for Apple M1 users are [here](./terraform/running-terraform-on-M1.md)
+  - Special instructions for Apple Sillicon users are [here](./terraform/running-terraform-on-apple-sillicon.md)
 - Install Confluent Cloud CLI by following the instructions [here](https://docs.confluent.io/confluent-cli/current/install.html).
 - Python 3.9.x
 
@@ -59,7 +59,7 @@ In order to successfully complete this demo you need to install few tools before
 
 ### AWS
 
-This demo uses an Oracle Standard Edition database and Amazon Redshift cluster hosted on AWS that are publicly accessible.
+This demo uses an Oracle Standard Edition database and Amazon Redshift cluster hosted on AWS that are publicly accessible. Terraform is used to provision resources on AWS so ensure your user has sufficient privileges.
 
 ### Snowflake
 
