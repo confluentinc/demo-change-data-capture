@@ -1,1 +1,7 @@
-[ { "entityTypes" : [ "cf_entity" ],"name" : "Sensitive","description" : "Confidential information that must be kept safe and out of reach from all outsiders unless they have permission to access it."} ]
+[
+  {
+    "entityTypes": ["cf_entity"],
+    "name": "Sensitive",
+    "description": "Confidential information that must be kept safe and out of reach from all outsiders unless they have permission to access it."
+  }
+]
