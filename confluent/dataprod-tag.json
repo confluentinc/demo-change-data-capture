@@ -1,1 +1,7 @@
-[ { "entityTypes" : [ "cf_entity" ],"name" : "DataProduct","description" : "Enriched customer data."} ]
+[
+  {
+    "entityTypes": ["cf_entity"],
+    "name": "DataProduct",
+    "description": "Enriched customer data."
+  }
+]
